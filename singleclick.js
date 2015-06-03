@@ -1,27 +1,33 @@
 L.Map.addInitHook( function () {
-    
+
     var that = this
     ,   h
+    ,   ignoreDragging = false
     ;
-    
+
     if (that.on)
     {
         that.on( 'click',    check_later );
         that.on( 'dblclick', function () { setTimeout( clear_h, 0 ); } );
+        that.on( 'dragstart', function () { ignoreDragging = true; } );
     }
-    
+
     function check_later( e )
     {
         clear_h();
-        
+
         h = setTimeout( check, 500 );
-        
+
         function check()
         {
-            that.fire( 'singleclick', L.Util.extend( e, { type : 'singleclick' } ) );
+            if (!ignoreDragging) {
+                that.fire( 'singleclick', L.Util.extend( e, { type : 'singleclick' } ) );
+            } else {
+                ignoreDragging = false;
+            }
         }
     }
-    
+
     function clear_h()
     {
         if (h != null)
@@ -30,5 +36,5 @@ L.Map.addInitHook( function () {
             h = null;
         }
     }
-    
+
 });
