@@ -21,7 +21,9 @@ L.Evented.include({
 	},
 
 	_fireSingleClick: function(ev) {
-		this.fire('singleclick', L.Util.extend(ev, {type: 'singleclick'}));
+		if (!ev.originalEvent._stopped) {
+			this.fire('singleclick', L.Util.extend(ev, {type: 'singleclick'}));
+		}
 	}
 })
 

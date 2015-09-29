@@ -29,11 +29,22 @@ var positron = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{
 map.options.singleClickTimeout = 250;
 
 map.on('singleclick',function ( e ) {
-	console.log( 'singleclick', e );
+	console.log( 'map singleclick', e );
 	L.popup().setLatLng( e.latlng )
-		.setContent( '<p><code>singleclick</code> at ' + e.latlng )
+		.setContent( '<p>Basemap <code>singleclick</code> at ' + e.latlng )
 		.openOn( map );
 } );
+
+var group = L.featureGroup().addTo(map);
+
+var circle = L.circle([51.505, -0.09], 1000).addTo(group).on('singleclick', function(ev) {
+	console.log( 'circle singleclick', ev );
+	L.DomEvent.stop(ev);
+	L.popup().setLatLng( ev.latlng )
+		.setContent( '<p>Circle <code>singleclick</code> at ' + ev.latlng )
+		.openOn( map );
+});
+circle.options.singleClickTimeout = 250;
 
 	</script>
 
