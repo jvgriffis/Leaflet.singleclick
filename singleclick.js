@@ -1,34 +1,27 @@
-L.Map.addInitHook( function () {
-    
-    var that = this
-    ,   h
-    ;
-    
-    if (that.on)
-    {
-        that.on( 'click',    check_later );
-        that.on( 'dblclick', function () { setTimeout( clear_h, 0 ); } );
-    }
-    
-    function check_later( e )
-    {
-        clear_h();
-        
-        h = setTimeout( check, 500 );
-        
-        function check()
-        {
-            that.fire( 'singleclick', L.Util.extend( e, { type : 'singleclick' } ) );
-        }
-    }
-    
-    function clear_h()
-    {
-        if (h != null)
-        {
-            clearTimeout( h );
-            h = null;
-        }
-    }
-    
+
+
+L.Evented.addInitHook( function () {
+	this.on('click', this._scheduleSingleClick, this);
+	this.on('dblclick', this._cancelSingleClick, this);
+
+	this._singleClickTimeout = null;
 });
+
+L.Evented.include({
+
+	_scheduleSingleClick: function(ev) {
+		this._cancelSingleClick();
+		this._singleClickTimeout = window.setTimeout(
+			L.bind(this._fireSingleClick, this, ev),
+			this.options.singleClickTimeout || 500);
+	},
+
+	_cancelSingleClick: function() {
+		window.clearTimeout(this._singleClickTimeout);
+	},
+
+	_fireSingleClick: function(ev) {
+		this.fire('singleclick', L.Util.extend(ev, {type: 'singleclick'}));
+	}
+})
+
