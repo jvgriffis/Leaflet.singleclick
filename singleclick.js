@@ -2,7 +2,8 @@ L.Evented.addInitHook( function () {
     this._timerId = null;
     this.on( 'click', this._scheduleSingleClick, this );
     this.on( 'dblclick', this._cancelSingleClick, this );
-
+    this.on( 'dragstart', this._cancelSingleClick, this );
+    this.on( 'zoomstart', this._cancelSingleClick, this );
 });
 
 L.Evented.include({
