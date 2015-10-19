@@ -1,43 +1,33 @@
-
-
 L.Evented.addInitHook( function () {
+    this.h = null;
+    this.on( 'click', this.check_later, this );
+    this.on( 'dblclick', this.timeoutClear, this );
 
-	this.on('click', this._scheduleSingleClick, this);
-	this.on('dblclick', this._cancelSingleClick, this);
-
-	this._singleClickTimeout = null;
-	this._cancel = false;
-	this._defaultTimeout = 500;
 });
 
 L.Evented.include({
 
-	_scheduleSingleClick: function(ev) {
-		this._cancelSingleClick(false);
-
-		this._singleClickTimeout = window.setTimeout(
-			L.bind(this._fireSingleClick, this, ev),
-			this.options.singleClickTimeout || this._defaultTimeout);
+	timeoutClear : function(){
+		setTimeout( this.clear_h.bind(this), 0 );
 	},
 
-	_cancelSingleClick: function(t) {
-		window.clearTimeout(this._singleClickTimeout);
-		if(t !== false){
-			this._cancel = true;
-        	setTimeout(function(){ this._cancel=false; }.bind(this), (this.options.singleClickTimeout ? this.options.singleClickTimeout + 50 : this._defaultTimeout + 50) );
-		}
-	},
+    check_later: function(e) {
+        this.clear_h();
 
-	_fireSingleClick: function(ev) {
-		if (!ev.originalEvent._stopped && !this._cancel) {
+        this.h = setTimeout( this.check.bind(this, e), (this.options.singleClickTimeout || 500) );
+    },
 
-	        setTimeout(function(){
-	            if(!this._cancel){
-					this.fire('singleclick', L.Util.extend(ev, {type: 'singleclick'}));
-	            }
-	        }.bind(this), 50);
+    check: function(e){
+        this.fire( 'singleclick', L.Util.extend( e, { type : 'singleclick' } ) );
+    },
 
-		}
-	}
+    clear_h: function(){
+        if (this.h != null)
+        {
+            clearTimeout( this.h );
+            this.h = null;
+        }
+    }
+
 })
 
