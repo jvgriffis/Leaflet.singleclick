@@ -19,7 +19,9 @@ L.Evented.include({
     },
 
     _fireSingleClick: function(e){
-        this.fire( 'singleclick', L.Util.extend( e, { type : 'singleclick' } ) );
+        if ( !e.originalEvent._stopped ) {
+            this.fire( 'singleclick', L.Util.extend( e, { type : 'singleclick' } ) );
+        }
     },
 
     _clearTimeout: function(){
