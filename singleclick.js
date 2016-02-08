@@ -10,6 +10,7 @@ L.Map.addInitHook( function () {
         that.on( 'click',    check_later );
         that.on( 'dblclick', function () { setTimeout( clear_h, 0 ); } );
         that.on( 'dragstart', function () { ignoreDragging = true; } );
+        that.on( 'dragend', function () { ignoreDragging = false; } );
     }
 
     function check_later( e )
