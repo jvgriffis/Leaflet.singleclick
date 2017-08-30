@@ -10,3 +10,4 @@ DIRECTIONS.org
 *.exe
 *.obj
 *.out
+*.bower_components

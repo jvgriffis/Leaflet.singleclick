@@ -1,41 +1,39 @@
-L.Map.addInitHook( function () {
+L.Evented.addInitHook( function () {
+    this._singleClickTimeout = null;
+    this.on( 'click', this._scheduleSingleClick, this );
+    this.on( 'dblclick dragstart zoomstart', this._cancelSingleClick, this );
+});
 
-    var that = this
-    ,   h
-    ,   ignoreDragging = false
-    ;
+L.Evented.include({
 
-    if (that.on)
-    {
-        that.on( 'click',    check_later );
-        that.on( 'dblclick', function () { setTimeout( clear_h, 0 ); } );
-        that.on( 'dragstart', function () { ignoreDragging = true; } );
-        that.on( 'dragend', function () { ignoreDragging = false; } );
-    }
+    _cancelSingleClick : function(){
+        // This timeout is key to workaround an issue where double-click events
+        // are fired in this order on some touch browsers: ['click', 'dblclick', 'click']
+        // instead of ['click', 'click', 'dblclick']
+        setTimeout( this._clearSingleClickTimeout.bind(this), 0 );
+    },
 
-    function check_later( e )
-    {
-        clear_h();
+    _scheduleSingleClick: function(e) {
+        this._clearSingleClickTimeout();
 
-        h = setTimeout( check, 500 );
+        this._singleClickTimeout = setTimeout(
+            this._fireSingleClick.bind(this, e),
+            (this.options.singleClickTimeout || 500)
+        );
+    },
 
-        function check()
-        {
-            if (!ignoreDragging) {
-                that.fire( 'singleclick', L.Util.extend( e, { type : 'singleclick' } ) );
-            } else {
-                ignoreDragging = false;
-            }
+    _fireSingleClick: function(e){
+        if ( !e.originalEvent._stopped ) {
+            this.fire( 'singleclick', L.Util.extend( e, { type : 'singleclick' } ) );
         }
-    }
+    },
 
-    function clear_h()
-    {
-        if (h != null)
-        {
-            clearTimeout( h );
-            h = null;
+    _clearSingleClickTimeout: function(){
+        if (this._singleClickTimeout != null) {
+            clearTimeout( this._singleClickTimeout );
+            this._singleClickTimeout = null;
         }
     }
 
 });
+

@@ -1,11 +1,18 @@
-# singleclick for Leaflet 0.7.*
-
-This plugin extends `L.Map` to fire the `singleclick` event. The `singleclick` event is not part of Leaflet's core, and most likely never will be: [#108](https://github.com/Leaflet/Leaflet/issues/108)
+# Leaflet.singleclick
 
 
 
-Note: For Leaflet 0.8 it could be possible to extend `L.Evented` instead, to have also Marker etc. support the `singleclick` event.
+This plugin extends `L.Evented` to fire the `singleclick` event. A `singleclick` happens when clicking on something but not double-clicking for 500msec.
 
-## live example
+The timeout can be configured by setting the `singleClickTimeout` option on the relevant `L.Evented`, like so:
 
-http://alpstein.github.io/leaflet-singleclick_0.7/
+```js
+marker.options.singleClickTimeout = 250;
+marker.on('singleclick', function(ev){ ... } );
+```
+
+Works with Leaflet 1.0.0-beta1 and greater. Does **not** work with 0.7.x.
+
+## Live example
+
+http://mazemap.github.io/Leaflet.singleclick/
